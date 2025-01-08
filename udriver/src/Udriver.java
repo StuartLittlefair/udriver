@@ -1870,6 +1870,7 @@ public class Udriver extends JFrame {
     //------------------------------------------------------------------------------------------------------------------------------------------
 	//
 	private boolean _simbadExists(String target) {
+		int TIMEOUT = 2000; // timeout in millisecs
 		String script = null;
 		String result = null;
 		script = "set limit 1\n";
@@ -1879,8 +1880,36 @@ public class Udriver extends JFrame {
 		try{
 			script = URLEncoder.encode(script,"ISO-8859-1");
 			URL simbadurl = new URL("http://simbad.u-strasbg.fr/simbad/sim-script?submit=submit+script&script=" + script);
-			result = _readText(simbadurl.openStream());
+			URLConnection simbadcon = simbadurl.openConnection();
+			simbadcon.setConnectTimeout(TIMEOUT);
+			simbadcon.setReadTimeout(TIMEOUT);
+			result = _readText(simbadcon.getInputStream());
 			//System.out.println(result);
+			String [] simbad = result.split("\n");
+			int startline = 0;
+			for (int i = 0 ; i < simbad.length ; i++) {
+				if (simbad[i].indexOf("::data::") > -1) {
+					startline = i;
+				}
+				if (simbad[i].indexOf("::error::") > -1) {
+					System.out.println("Encountered simbad error");
+					return false;
+				}
+			}
+			for (int i = startline ; i < simbad.length ; i++) {
+				if (simbad[i].indexOf("** UDRIVER QUERY") > -1) {
+					if (simbad.length > (i+1)) {
+						if (simbad[i+1].split(":").length == 3) {
+							logPanel.add("SIMBAD lookup <strong>success.</strong>",LogPanel.OK,true);
+						} else {
+							return false;
+						}
+					} else {
+						return false;
+					}
+				}
+			}
+			return true;
 		} catch(UnsupportedEncodingException uee) {
 			System.out.println(uee);
 		} catch(MalformedURLException mue) {
@@ -1888,32 +1917,7 @@ public class Udriver extends JFrame {
 		} catch(IOException ioe) {
 			System.out.println(ioe);
 		}
-		String [] simbad = result.split("\n");
-		int startline = 0;
-		for (int i = 0 ; i < simbad.length ; i++) {
-			if (simbad[i].indexOf("::data::") > -1) {
-				startline = i;
-			}
-			if (simbad[i].indexOf("::error::") > -1) {
-				System.out.println("Encountered simbad error");
-				return false;
-			}
-		}
-		for (int i = startline ; i < simbad.length ; i++) {
-			if (simbad[i].indexOf("** UDRIVER QUERY") > -1) {
-				if (simbad.length > (i+1)) {
-					if (simbad[i+1].split(":").length == 3) {
-						logPanel.add("SIMBAD lookup <strong>success.</strong>",LogPanel.OK,true);
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			}
-		}
-		return true;
-
+		return false;
 	}	
 	//
     //------------------------------------------------------------------------------------------------------------------------------------------
