@@ -257,21 +257,21 @@ public class Udriver extends JFrame {
 
 	// Filters
 	private static final String[] BLUE_FILTER_NAMES = {
-		"u'","NBF3500","Clear","Lab","Special","(None)"
+		"Super u'","u'","NBF3500","Clear","Lab","Special","(None)"
 	};
 	private static final String[] GREEN_FILTER_NAMES = {
-		"g'","HeII","BCont","NBF4170","Clear","Lab","Special","(None)"
+		"Super g'", "g'","HeII","BCont","NBF4170","Clear","Lab","Special","(None)"
 	};
 	private static final String[] RED_FILTER_NAMES = {
-		"r'","i'","z'","RCont","NaI","HA-N","HA-B",
+	    "Super r'","Super i'", "Super z'", "r'","i'","z'","RCont","NaI","HA-N","HA-B",
 		"Clear","Lab","Special","(None)"
 	};
 	private JComboBox _filter1;
 	private JComboBox _filter2;
 	private JComboBox _filter3;
-	private String defaultFilter1 = "u'";
-	private String defaultFilter2 = "g'";
-	private String defaultFilter3 = "r'";
+	private String defaultFilter1 = "Super u'";
+	private String defaultFilter2 = "Super g'";
+	private String defaultFilter3 = "Super r'";
 
 
     // Exposure delay measured in 0.1 millisecond intervals, so prompted
